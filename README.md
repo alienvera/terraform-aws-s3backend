@@ -9,7 +9,7 @@ A reusable module to provision a secure, flexible Terraform backend in AWS using
 
 - 💾 S3 bucket for Terraform state (with optional force destroy)
 - 🔐 Optional DynamoDB table for state locking
-- 🎭 IAM role for secure access
+- 🎭 IAM role for secure access 
 - ✅ Support for both:
   - `principal_arns`: list of IAM ARNs
   - `principal_org_id`: restricts to principals in an AWS Organization
@@ -22,7 +22,8 @@ A reusable module to provision a secure, flexible Terraform backend in AWS using
 
 ```hcl
 module "backend" {
-  source = "git::https://github.com/alienvera/terraform-aws-s3backend-alienvera.git?ref=feat/v2-refactor"
+  source  = "alienvera/s3backend/aws"
+  version = "2.0.0"
 
   namespace         = "velocivtech"
 
