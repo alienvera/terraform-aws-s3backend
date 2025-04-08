@@ -22,11 +22,17 @@ variable "force_destroy_state" {
 
 variable "tags" {
   description = "Tags to apply to all resources created by this module"
-  type        = map(string)
+  type = map(string)
   default = {
     Owner       = "infra@velocivtech.com"
     Project     = "terraform-backend"
     CostCenter  = "infra"
     Environment = "infrastructure"
   }
+}
+
+variable "enable_locking" {
+  description = "Enable DynamoDB state locking for Terraform."
+  type        = bool
+  default     = true
 }
