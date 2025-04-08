@@ -1,0 +1,40 @@
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+crash.log
+
+# Packer
+packer_cache/
+*.pkr.hcl.lock.json
+output-*/   # Packer output dirs
+
+# Ansible
+*.retry
+*.log
+*.tmp
+
+# SSH / Secrets
+*.pem
+*.key
+*.crt
+.secrets/
+.env
+
+# Cloud-init
+user-data
+meta-data
+*.iso
+
+# OS / Editor files
+.DS_Store
+*.swp
+*.bak
+.idea/
+.vscode/
+__pycache__/
+
+# Logs
+*.log
+logs/
