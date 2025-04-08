@@ -4,7 +4,7 @@ data "aws_caller_identity" "current" {}
 data "aws_region" "current" {}
 
 locals {
-  principal_arns = var.principal_arns != null ? var.principal_arns : [data.aws_caller_identity.current.arn]
+  principal_arns = length(var.principal_arns) > 0 ? var.principal_arns : [data.aws_caller_identity.current.arn]
 }
 
 resource "aws_iam_role" "this" {
