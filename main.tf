@@ -1,71 +1,31 @@
-
-provider "aws" {
-  region  = "us-west-2"
-  profile = "allen"
-}
-
-data "aws_region" "current" {}
+# Terraform backend S3 bucket and optional DynamoDB for state locking
 
 resource "random_string" "rand" {
-  length  = 24
-  special = false
+  length  = 8
   upper   = false
+  special = false
 }
 
 locals {
-  namespace = substr(join("-", [var.namespace, random_string.rand.result]), 0, 24)
+  full_name = "${var.namespace}-${random_string.rand.result}"
 }
 
-resource "aws_resourcegroups_group" "resourcegroups_group" {
-  name = "${local.namespace}-group"
-
-  resource_query {
-    query = <<-JSON
-{
-  "ResourceTypeFilters": [
-    "AWS::AllSupported"
-  ],
-  "TagFilters": [
-    {
-      "Key": "ResourceGroup",
-      "Values": ["${local.namespace}"]
-    }
-  ]
+resource "aws_s3_bucket" "this" {
+  bucket        = local.full_name
+  force_destroy = var.force_destroy_state
+  tags          = var.tags
 }
-  JSON
+
+resource "aws_s3_bucket_versioning" "this" {
+  bucket = aws_s3_bucket.this.id
+
+  versioning_configuration {
+    status = "Enabled"
   }
 }
 
-resource "aws_kms_key" "kms_key" {
-  tags = {
-    ResourceGroup = local.namespace
-  }
-}
-
-resource "aws_s3_bucket" "s3_bucket" {
-  bucket        = "${local.namespace}-state-bucket"
-  force_destroy = true
-
-  versioning {
-    enabled = true
-  }
-
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        sse_algorithm     = "aws:kms"
-        kms_master_key_id = aws_kms_key.kms_key.arn
-      }
-    }
-  }
-
-  tags = {
-    ResourceGroup = local.namespace
-  }
-}
-
-resource "aws_s3_bucket_public_access_block" "s3_bucket" {
-  bucket = aws_s3_bucket.s3_bucket.id
+resource "aws_s3_bucket_public_access_block" "this" {
+  bucket = aws_s3_bucket.this.id
 
   block_public_acls       = true
   block_public_policy     = true
@@ -73,8 +33,9 @@ resource "aws_s3_bucket_public_access_block" "s3_bucket" {
   restrict_public_buckets = true
 }
 
-resource "aws_dynamodb_table" "dynamodb_table" {
-  name         = "${local.namespace}-state-lock"
+resource "aws_dynamodb_table" "this" {
+  count        = var.enable_locking ? 1 : 0
+  name         = "${local.full_name}-lock"
   hash_key     = "LockID"
   billing_mode = "PAY_PER_REQUEST"
 
@@ -82,7 +43,6 @@ resource "aws_dynamodb_table" "dynamodb_table" {
     name = "LockID"
     type = "S"
   }
-  tags = {
-    ResourceGroup = local.namespace
-  }
+
+  tags = var.tags
 }
