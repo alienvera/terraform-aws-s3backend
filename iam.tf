@@ -27,7 +27,7 @@ resource "aws_iam_role" "this" {
       {
         Effect = "Allow"
         Principal = {
-          AWS = local.use_org_id ? "*" : local.principal_arns
+          AWS = local.use_org_id ? ["*"] : local.principal_arns
         }
         Action = "sts:AssumeRole"
         Condition = local.use_org_id ? {
