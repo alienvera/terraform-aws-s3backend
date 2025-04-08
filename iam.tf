@@ -13,6 +13,11 @@ locals {
   use_org_id     = var.principal_org_id != null && length(var.principal_arns) == 0
 }
 
+# Trust policy:
+# - Uses specific ARNs if provided (e.g. IAM roles or users)
+# - If using an Org ID, sets AWS: "*" and restricts with aws:PrincipalOrgID
+# - Guarantees there's always a valid trust principal to avoid MalformedPolicy errors
+
 resource "aws_iam_role" "this" {
   name = "${var.namespace}-tf-assume-role"
 
