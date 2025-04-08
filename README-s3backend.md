@@ -25,7 +25,7 @@ module "backend" {
   enable_encryption     = true
   region                = "us-east-1"
   tags = {
-    Owner       = "you@velocivtech.com"
+    Owner       = "infra@velocivtech.com"
     Project     = "terraform-backend"
     CostCenter  = "infra"
   }
