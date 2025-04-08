@@ -41,7 +41,7 @@ data "aws_iam_policy_document" "this" {
     for_each = var.enable_locking ? [1] : []
     content {
       actions   = ["dynamodb:GetItem", "dynamodb:PutItem", "dynamodb:DeleteItem"]
-      resources = [aws_dynamodb_table.this.arn]
+      resources = [aws_dynamodb_table.this[0].arn] #test
     }
   }
 }
