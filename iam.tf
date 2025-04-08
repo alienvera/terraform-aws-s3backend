@@ -3,6 +3,11 @@
 data "aws_caller_identity" "current" {}
 data "aws_region" "current" {}
 
+# If principal_arns is provided (non-empty), use it directly.
+# Otherwise, if principal_org_id is set, fall back to wildcard (*) principal
+# and restrict access using the aws:PrincipalOrgID condition.
+# If neither is set, fallback to the identity of the caller running Terraform.
+
 locals {
   principal_arns = length(var.principal_arns) > 0 ? var.principal_arns : [data.aws_caller_identity.current.arn]
   use_org_id     = var.principal_org_id != null && length(var.principal_arns) == 0
