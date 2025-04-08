@@ -1,19 +1,32 @@
 variable "namespace" {
-  description = "The project namespace to use for unique resource naming"
-  default     = "team-rocket"
+  description = "Project namespace to prefix S3/DynamoDB resources for uniqueness (e.g. 'velocivtech' or 'team-rocket')"
   type        = string
-}
 
+  validation {
+    condition     = length(var.namespace) > 2 && length(var.namespace) < 64
+    error_message = "Namespace must be between 3 and 63 characters."
+  }
+}
 
 variable "principal_arns" {
-  description = "A list of principal arns allowed to assume the Iam role"
-  default     = null
+  description = "Optional list of AWS principal ARNs allowed to assume IAM roles related to state access. Useful for additional trust policies."
   type        = list(string)
+  default     = []
 }
 
-
 variable "force_destroy_state" {
-  description = "Force destroy the s3 bucket containing state files?"
-  default     = true
+  description = "If true, the S3 bucket can be destroyed even if it contains Terraform state objects. Use with caution."
   type        = bool
+  default     = false
+}
+
+variable "tags" {
+  description = "Tags to apply to all resources created by this module"
+  type = map(string)
+  default = {
+    Owner       = "infra@velocivtech.com"
+    Project     = "terraform-backend"
+    CostCenter  = "infra"
+    Environment = "infrastructure"
+  }
 }
