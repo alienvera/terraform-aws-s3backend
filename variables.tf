@@ -36,3 +36,9 @@ variable "enable_locking" {
   type        = bool
   default     = true
 }
+
+variable "principal_org_id" {
+  description = "Optional AWS Organization ID to restrict who can assume the IAM role"
+  type        = string
+  default     = null
+}
